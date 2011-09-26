@@ -7,13 +7,16 @@
 #
 #
 
-def root(n, epsilon=0.0001):
-    """ find the square root using newton's method """
-    initial = 1. # TODO: better choice?
-    x = initial
+def root(a, epsilon=0.00001):
+    """ find the positive square root using newton's method """
+
+    if type(a) != float or not a > 0.:
+        raise TypeError("Invalid type: argument must be a positive floating point number")
+
+    x = 1. # newton converges for every initial x != 0 for finding the square root
     while True:
         old_x = x
-        x = 0.5 * (x + n/x)
+        x = 0.5 * (x + a/x)
         if (abs(old_x-x) < epsilon):
             break
     return x
