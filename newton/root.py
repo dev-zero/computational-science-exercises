@@ -7,7 +7,7 @@
 #
 #
 
-def root(a, epsilon=0.00001):
+def root(a, epsilon=pow(2.,-52)):
     """ find the positive square root using newton's method """
 
     if type(a) != float or not a > 0.:
