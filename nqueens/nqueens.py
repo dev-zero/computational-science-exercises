@@ -23,6 +23,7 @@ def nqueens_solutions(size):
     #         return True
     #     return False
 
+    # backtracking is probably faster, but this is easier
     from itertools import permutations
     for p in permutations(range(size)):
         if is_valid(p):
@@ -35,31 +36,20 @@ def unique_solutions(size):
         return sorted([complex(2.*i+1. - size, 2.*p[i]+1. - size)*(complex(0,1)**r) for i in xrange(size)], key = lambda x: x.real)
 
     for s in nqueens_solutions(size):
-        if s[::-1] in solutions:
-            print ("found horizontal equivalent")
-            continue
-
-    # doesn't reduce solutions
-#    if [size-1-n for n in s] in solutions:
-#            print ("found vertical equivalent")
-#            continue
-
-        if [s.index(i) for i in xrange(size)] in solutions:
-            print ("found diagonal equivalent")
-            continue
-
         complex_solutions = [complex_board(p) for p in solutions]
 
-        is_rotation_equivalent = False
-        for r in xrange(1,4):
-            if complex_board(s, r) in complex_solutions:
-                is_rotation_equivalent = True
-                print ("found rotation equivalent")
-                break
-        if is_rotation_equivalent:
-            continue
+        for r in xrange(0,4):
+            board = complex_board(s, r)
 
-        solutions.append(s)
+            if board in complex_solutions:
+                break
+
+            # board is already sorted by real-part, therefore conjugation does not change order
+            if [x.conjugate() for x in board] in complex_solutions:
+                break
+
+        else:
+            solutions.append(s)
 
     return solutions
 
@@ -86,7 +76,6 @@ if __name__ == '__main__':
         if (size < 2):
             print ("The size must be >= 2")
             exit(1)
-#    print_solutions(size)
     print_unique_solutions(size)
     exit(0)
 
