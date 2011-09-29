@@ -13,11 +13,14 @@ def nroot(n, a):
     if type(a) != float or type(n) != int or a <= 0.:
         raise TypeError("Invalid type: argument must be a positive floating point number and the root an integer")
 
+    from sys import float_info
+
     x = 1.
     while True:
         old_x = x
         x = ((n-1)*x + a/pow(x,n-1))/n
-        if (old_x == x): # means that we reached the maximum precision
+        # means that the difference is only representable subnormal and we are in the "regime" of gradual underflow:
+        if (abs(old_x-x) < float_info.min):
             break
     return x
 
