@@ -7,31 +7,32 @@
 #
 #
 
-def root(a, epsilon=pow(2.,-52)):
-    """ find the positive square root using newton's method """
+def nroot(n, a):
+    """ find the positive n-th root using newton's method """
 
-    if type(a) != float or not a > 0.:
-        raise TypeError("Invalid type: argument must be a positive floating point number")
+    if type(a) != float or type(n) != int or a <= 0.:
+        raise TypeError("Invalid type: argument must be a positive floating point number and the root an integer")
 
-    x = 1. # newton converges for every initial x != 0 for finding the square root
+    x = 1.
     while True:
         old_x = x
-        x = 0.5 * (x + a/x)
-        if (abs(old_x-x) < epsilon):
+        x = ((n-1)*x + a/pow(x,n-1))/n
+        if (old_x == x): # means that we reached the maximum precision
             break
     return x
 
-def print_usage(name):
-    print("usage: {} <number> [<number2> [<number3> ...]]".format(name))
 
-def print_roots(numbers):
+def print_usage(name):
+    print("usage: {} <root> <number> [<number2> [<number3> ...]]".format(name))
+
+def print_nroots(root, numbers):
     for n in numbers:
-        print("sqrt({}) = {}").format(n, root(float(n)))
+        print("sqrt({}) = {}").format(n, nroot(int(root), float(n)))
 
 if __name__ == '__main__':
     from sys import argv, exit
-    if len(argv) > 1:
-        print_roots(argv[1:])
+    if len(argv) > 2:
+        print_nroots(argv[1], argv[2:])
     else:
         print_usage(argv[0])
     exit(0)
