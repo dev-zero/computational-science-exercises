@@ -3,20 +3,41 @@
 #
 # Copyright (c) 2011 Tiziano Müller <tm@dev-zero.ch>
 #
+# This draws a resizeable triangle and allows one to draw points
+# which are being colored in red if they are outside the triangle, green otherwise.
 #
-#
-#
+# In contrary to the suggested solution this does not clear the objects when resizing
+# the triangle but rechecks whether they are inside the triangle after draggine the triangle.
+# Avoiding that a point is being drawn when the triangle is dragged is realized by
+# drawing the point when releasing the mouse button and only if the mouse was not moved in-between
 
 from numpy import array, dot, arange
 from Tkinter import Tk, Canvas, ALL, _flatten
 
-triangle = [ [100, 100], [180,100], [100,40] ]
-selected_corner = None
+triangle = [ [100, 100], [180,100], [100,40] ] # the triangle coordinates
+selected_corner = None # the selected corner of the triangle
 point_radius = 4
-point_color = 'green'
-point_draw = False
+point_color = 'green' # the color of the point to be painted, having this shared between clicked and released avoids a second is_inside check
+point_draw = False # this gives a little state machine, avoiding that a point is being drawn when we actually want to drag the triangle
+points = [] # all the points being drawn to recheck them for being inside the triangle when resizing
 
 def is_inside(point, triangle):
+    ''' Tests whether a point is contained in a triangle
+        specified by an array of points.
+        The point and the points in the triangle must have
+        a vector semantic (for example array() from numpy)
+        and a dot-product must be defined (for example dot() from numpy).
+        Calculation is done by specifying a coordinate transformation and
+        then reversing it. The new coordination system is defined by
+        the AB and AC axis of the triangle and the point A as an offet.
+        A point which is inside must then have coords > 0 and must be
+        smaller than 1 in the 1-norm.
+
+        Any point can be written as P = A + u(B-A) + v(C-A)
+        which is equivalent to P-A = u(B-A) + v(C-A).
+        Applying once the dot-product with B-A and once with C-A
+        yields two equations which can then be solved for u,v
+        '''
     v = []
     v.append(triangle[2] - triangle[0])
     v.append(triangle[1] - triangle[0])
@@ -65,7 +86,7 @@ def clicked(event):
 
 def released(event):
     if point_draw:
-        canvas.create_oval(event.x-point_radius, event.y-point_radius, event.x+point_radius, event.y+point_radius, fill=point_color)
+        points.append(canvas.create_oval(event.x-point_radius, event.y-point_radius, event.x+point_radius, event.y+point_radius, fill=point_color))
 
 def dragged(event):
     global point_draw
@@ -77,6 +98,14 @@ def dragged(event):
     global triangle
     triangle[selected_corner] = [event.x, event.y]
     canvas.coords(triangle_item, _flatten(triangle))
+
+    for p in points:
+        color = 'red'
+        oval_coords = canvas.coords(p)
+        point = array([oval_coords[0]+point_radius, oval_coords[1]+point_radius])
+        if is_inside(point, array(triangle)):
+            color = 'green'
+        canvas.itemconfig(p, fill=color)
     
 
 canvas.bind("<Button-1>", clicked)
