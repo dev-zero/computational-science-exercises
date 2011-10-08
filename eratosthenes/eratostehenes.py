@@ -8,8 +8,13 @@
 #
 
 def generate_primes(N):
-    ''' returns an array with each position in the array
-        defining the number and its value whether or not it's a prime '''
+    ''' returns an array with primes up to size N'''
+    # ideas for optimization:
+    # - preset even numbers with False
+    #   and set the loop-increment for i to 2
+    # - or store the value of 2n+1 at position n
+    #   (which would also half the storage requirement)
+
     numbers = [True]*(N+1)
     numbers[0] = numbers[1] = False
     
@@ -20,13 +25,24 @@ def generate_primes(N):
                 numbers[k] = False
         i += 1
 
-    return numbers
+    return [n for n,v in enumerate(numbers) if v]
+
+def generate_primes2(N):
+    ''' returns a generator of up to size N'''
+    multiples = []
+
+    yield 2
+    n = 3
+    while n < N:
+        if n not in multiples:
+            multiples += range(n**2, N+1, n)
+            yield n
+        n += 2
 
 def print_primes(N):
     ''' print all primes between 1..N '''
-    for n, v in enumerate(generate_primes(N)):
-        if v:
-            print ("{} is prime".format(n))
+    for n in generate_primes(N):
+        print ("{} is prime".format(n))
 
 def plot_primes(N):
     ''' print all primes between 1..N and plot P_k vs k*ln(P_k) '''
@@ -34,11 +50,10 @@ def plot_primes(N):
     from pylab import plot, show, xlabel, ylabel
     x = []
     y = []
-    for n, v in enumerate(generate_primes(N)):
-        if v:
-            print ("{} is prime".format(n))
-            x.append(n)
-            y.append((len(y)+1)*log(n))
+    for n in generate_primes(N):
+        print ("{} is prime".format(n))
+        x.append(n)
+        y.append((len(y)+1)*log(n))
 
     plot(x, y)
     xlabel("P_k")
