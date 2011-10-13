@@ -33,22 +33,33 @@ def calculate_dprime(c, r):
 def decode(b, d, N):
     return pow(b, d, N)
 
-N = 1024384027
-c = 910510237
-b = 100156265
+if __name__ == '__main__':
+    from argparse import ArgumentParser
+    parser = ArgumentParser(description="decrypt a RSA-encrypted integer/word by brute-force")
+    parser.add_argument('-N', dest='N', type=int, required=True, help="the product of the primes N=pq (part of the public key)")
+    parser.add_argument('-c', dest='c', type=int, required=True, help="c as given in cd=1+s(p-1)(q-1) (part of the public key)")
+    parser.add_argument('numbers', metavar='b', type=int, nargs='+', help="the numbers to crack with the specified public key")
 
-from time import time
+    args = parser.parse_args()
 
-start = time()
-r = calculate_r(b, N)
-r_time = time()-start
-print("calculated r: {} (in {} seconds)".format(r, r_time))
+    #N = 1024384027
+    #c = 910510237
+    #b = 100156265
 
-start = time()
-dprime = calculate_dprime(c, r)
-dprime_time = time()-start
-print("calculated d': {} (in {} seconds)".format(dprime, dprime_time))
+    from time import time
 
-a = pow(b, dprime, N)
-print "a: '{}' (in {} seconds)".format(word(a), r_time + dprime_time)
+    for b in args.numbers:
+        print("cracking b: {} using N: {}, c: {}".format(b, args.N, args.c))
 
+        start = time()
+        r = calculate_r(b, args.N)
+        r_time = time()-start
+        print("calculated r: {} (in {} seconds)".format(r, r_time))
+
+        start = time()
+        dprime = calculate_dprime(args.c, r)
+        dprime_time = time()-start
+        print("calculated d': {} (in {} seconds)".format(dprime, dprime_time))
+
+        a = pow(b, dprime, args.N)
+        print "a: {}/'{}' (in {} seconds total)".format(a, word(a), r_time + dprime_time)
