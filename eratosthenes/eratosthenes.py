@@ -3,9 +3,10 @@
 #
 # Copyright (c) 2011 Tiziano Müller <tm@dev-zero.ch>
 #
+# Generates primes or pseudoprimes up to a given number.
 #
-#
-#
+# Usage: ./eratosthenes.py --help
+# ... this should give enough information on how to run it
 
 def generate_primes_array(N):
     ''' returns an array of booleans of size N

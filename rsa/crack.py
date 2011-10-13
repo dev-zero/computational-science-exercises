@@ -3,9 +3,15 @@
 #
 # Copyright (c) 2011 Tiziano Müller <tm@dev-zero.ch>
 #
+# This is a simple example of how to get the clear text
+# given a cypher and the public key without finding
+# the private key first.
+# As I understand it, this only works for the unmodified
+# (unpadded) RSA algorithm at all, besides being unpractical
+# due to the long time needed to calculate r.
 #
-#
-#
+# Usage: ./crack.py --help
+# ... this should give enough information on how to run this example
 
 def word(n):
     s = ""
@@ -18,6 +24,7 @@ def word(n):
     return s
 
 def calculate_r(b, N):
+    ''' this takes a long time'''
     r = 1
     while pow(b, r, N) != 1:
         r += 1
