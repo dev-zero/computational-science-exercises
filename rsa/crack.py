@@ -23,12 +23,15 @@ def word(n):
         n /= 32
     return s
 
+def r_pow_generator(b, N):
+    from itertools import imap, count
+    return imap(lambda r: (r, pow(b, r, N)), count(1))
+
 def calculate_r(b, N):
     ''' this takes a long time'''
-    r = 1
-    while pow(b, r, N) != 1:
-        r += 1
-    return r
+    for r,p in r_pow_generator(b, N):
+        if p == 1:
+            return r
 
 def calculate_dprime(c, r):
     m = 1
