@@ -19,12 +19,9 @@ for p in [0, 2, 4]:
         A[p//2][abs(x)//2] += pow(x, p)*(p+1)
     b[p//2] = 2*pow(5, p+1)
 
-print A
-print b
-
 x = solve(A,b)
 
 print "coefficients:", x
-print "coefficients (Fractions):", [Fraction(x_i) for x_i in x]
-print "calculation by hand: [ 335/96, 125/144, 1375/576 ]"
+print "coefficients (converted to fractions):", [str(Fraction(x_i)) for x_i in x]
+print "coefficients calculated by hand: [ 335/96, 125/144, 1375/576 ]"
 
