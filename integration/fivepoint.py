@@ -25,6 +25,10 @@ def fivepoint(f, a, b, B = 1):
 
     return sum(map(lambda x: coefficients[abs(x)//2]*f(phi(x)), [-4, -2, 0, 2, 4]))*(b-a)*0.1
 
+def func_prod(lhs, rhs, weightf=lambda x: 1., B=100, i=(-1.,1.)):
+    from fivepoint import fivepoint
+    return fivepoint(lambda x: lhs(x)*rhs(x)*weightf(x), i[0], i[1], B)
+
 def gaussian_error_function_part_normalized(t):
     ''' this is the gaussian error function function part
         normalized to the range 0..1 (instead of -inf..inf)
