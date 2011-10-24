@@ -22,6 +22,6 @@ for p in [0, 2, 4]:
 x = solve(A,b)
 
 print "coefficients:", x
-print "coefficients (converted to fractions):", [str(Fraction(x_i)) for x_i in x]
+print "coefficients (converted to fractions):", [str(Fraction(x_i).limit_denominator(1000000)) for x_i in x]
 print "coefficients calculated by hand: [ 335/96, 125/144, 1375/576 ]"
 
