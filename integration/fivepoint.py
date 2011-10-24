@@ -9,7 +9,7 @@
 
 from fractions import Fraction
 
-coefficients = [ Fraction('335/96'), Fraction('125/144'), Fraction('1375/576')]
+coefficients = [ Fraction(335,96), Fraction(125,144), Fraction(1375,576)]
 
 def fivepoint(f, a, b, B = 1):
     ''' 5-point open-type Newton-Cotes integration with non-equidistant
@@ -21,9 +21,9 @@ def fivepoint(f, a, b, B = 1):
         return a + 0.1*(float(t)+5.)*(b-a)
 
     if B > 1:
-        return sum(map(lambda i: fivepoint(f, a+i*(b-a)/B, a+(i+1)*(b-a)/B), xrange(B)))
+        return sum(map(lambda i: fivepoint(f, a+i*(b-a)/float(B), a+(i+1)*(b-a)/float(B)), xrange(B)))
 
-    return sum(map(lambda x: coefficients[abs(x)//2]*f(phi(x)), [-4, -2, 0, 2, 4]))*(b-a)*0.1
+    return sum(map(lambda x: coefficients[abs(x)//2]*f(phi(float(x))), [-4, -2, 0, 2, 4]))*(b-a)*0.1
 
 def func_prod(lhs, rhs, weightf=lambda x: 1., B=100, i=(-1.,1.)):
     from fivepoint import fivepoint
