@@ -15,15 +15,17 @@ def fivepoint(f, a, b, B = 1):
     ''' 5-point open-type Newton-Cotes integration with non-equidistant
         points of support at [-5, -4, -2, 0, 2, 4, 5] where the boundary
         points -5, 5 are ignored because of the open type '''
-        
+
+    from math import fsum
+
     def phi(t):
         ''' the interval transformation -5..5 -> a..b '''
         return a + 0.1*(float(t)+5.)*(b-a)
 
     if B > 1:
-        return sum(map(lambda i: fivepoint(f, a+i*(b-a)/float(B), a+(i+1)*(b-a)/float(B)), xrange(B)))
+        return fsum(map(lambda i: fivepoint(f, a+i*(b-a)/float(B), a+(i+1)*(b-a)/float(B)), xrange(B)))
 
-    return sum(map(lambda x: coefficients[abs(x)//2]*f(phi(float(x))), [-4, -2, 0, 2, 4]))*(b-a)*0.1
+    return fsum(map(lambda x: coefficients[abs(x)//2]*f(phi(float(x))), [-4, -2, 0, 2, 4]))*(b-a)*0.1
 
 def func_prod(lhs, rhs, weightf=lambda x: 1., B=100, i=(-1.,1.)):
     from fivepoint import fivepoint
