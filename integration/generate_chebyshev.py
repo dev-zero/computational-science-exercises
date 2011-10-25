@@ -14,7 +14,7 @@ def eval_poly(c, x):
     return reduce(lambda c1, c2: c1*x + c2, reversed(c))
 
 def generate_chebyshev(N):
-    ''' generate Chebyshev polynom coefficients for P_n '''
+    ''' generate Chebyshev polynom coefficients for P_n using Gauss-Chebyshev integration '''
 
     from numpy import array, eye, dot
     from gauss_chebyshev import func_prod
