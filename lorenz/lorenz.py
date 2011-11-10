@@ -8,24 +8,67 @@
 #
 
 from scipy.integrate import ode
-from numpy import array, linspace, append
+from numpy import array
 import vtk
 import random
 
-def lorenz(t, c, sigma, r, b):
-    return array([sigma*(c[1]-c[0]), c[0]*(r - c[2])-c[1], c[0]*c[1] - b*c[2]])
+class Lorenz:
+    ''' Formulate the problem, capsulate the ODE solver
+        and provide access functions for points, initial conditions
+        and parameters '''
+    def __init__(self):
+        # parameters
+        self.sigma = 10.
+        self.r = 28.
+        self.b = 8./3.
 
-c0 = array([0., 1., 0.])
-params = (10., 28., 8./3.)
-t = linspace(0., 100., 5000)
+        # initial condition
+        self.c0 = [0., 1., 0.]
 
-o = ode(lorenz)
+        # the ODE solver and iteration counter
+        self.o = ode(self.diff)
+        self.i = 0
+
+        # initialize the solver
+        self.setInitial(self.c0)
+        self.setParams(self.sigma, self.r, self.b)
+
+    def setParams(self, sigma, r, b):
+        self.o.set_f_params(sigma, r, b)
+        self.sigma = sigma
+        self.r = r
+        self.b = b
+        self.setInitial(self.c0)
+
+    def setInitial(self, c0, t = 0.):
+        self.o.set_initial_value(c0, t)
+        self.c0 = c0
+        self.i = 0
+
+    def diff(self, t, c, sigma, r, b):
+        return array([sigma*(c[1]-c[0]), c[0]*(r - c[2])-c[1], c[0]*c[1] - b*c[2]])
+
+    def eval(self, dt = 0.02, steps=1):
+        self.i += 1
+        for s in xrange(steps):
+            self.o.integrate(self.o.t + dt)
+            if not self.o.successful():
+                return False
+        return True
+
+    def getValue(self):
+        return self.o.y
+
+    def getIteration(self):
+        return self.i
+
+def randomLorenzParameters():
+    return (random.random()*20, random.random()*50, random.random()*10)
+
+l = Lorenz()
 
 points = vtk.vtkPoints()
-points.InsertPoint(0, c0)
 lines = vtk.vtkCellArray()
-lines.InsertNextCell(1) # number of points
-lines.InsertCellPoint(0)
 
 track = vtk.vtkPolyData()
 track.SetPoints(points)
@@ -48,36 +91,41 @@ iren.SetRenderWindow(renWin)
 ren.AddActor(actor)
 
 ren.SetBackground(0, 0, 0)
-#renWin.SetSize(500, 500)
 renWin.SetFullScreen(1)
 
 iren.Initialize()
 iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
 renWin.Render()
 
-o.set_initial_value(c0, 0.).set_f_params(params[0], params[1], params[2])
-i = 1
-
 def update(obj, event):
-    global i
-
-    if o.successful() and o.t < 100.:
-        o.integrate(o.t+0.02)
-        points.InsertPoint(i, o.y)
+    if l.getIteration() < 1000 and l.getIteration() > 0:
+        points.InsertPoint(l.getIteration(), l.getValue())
         points.Modified()
 
         lines.InsertNextCell(2)
-        lines.InsertCellPoint(i-1)
-        lines.InsertCellPoint(i)
+        lines.InsertCellPoint(l.getIteration()-1)
+        lines.InsertCellPoint(l.getIteration())
         lines.Modified()
 
-        iren = obj
-        ren.ResetCamera()
-        iren.GetRenderWindow().Render()
-    
-        i += 1
+    else:
+        sigma, r, b = randomLorenzParameters()
+        l.setParams(sigma, r, b)
+        points.Reset()
+        points.InsertPoint(l.getIteration(), l.getValue())
+        points.Modified()
+        lines.Reset()
+        lines.InsertNextCell(1)
+        lines.InsertCellPoint(0)
+        lines.Modified()
+
+    if not l.eval():
+        import sys.exit
+        exit(1)
+
+    iren = obj
+    ren.ResetCamera()
+    iren.GetRenderWindow().Render()
 
 iren.AddObserver('TimerEvent', update)
 iren.CreateRepeatingTimer(1);
-
 iren.Start()
