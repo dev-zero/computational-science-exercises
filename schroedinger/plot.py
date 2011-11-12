@@ -31,8 +31,8 @@ s2.setPotential(vectorize(doubleWellPotential))
 
 fig = figure()
 ax = fig.add_subplot(211)
-ax.set_title("Press 'space' to start the simulation")
-ax.set_ylim(-1, 1)
+ax.set_title("Press 'space' to start/stop the simulation")
+ax.set_ylim(-1.2, 1.2)
 
 s1_l_amp,  = plot(s1.x(), abs(s1.f()), color='black')
 s1_l_real, = plot(s1.x(), s1.f().real, color='red')
@@ -40,7 +40,7 @@ s1_l_imag, = plot(s1.x(), s1.f().imag, color='blue')
 s1_l_pot   = plot(s1.x(), s1.V(), color='green')
 
 ax = fig.add_subplot(212)
-ax.set_ylim(-1, 1)
+ax.set_ylim(-1.2, 1.2)
 
 s2_l_amp,  = plot(s2.x(), abs(s2.f()), color='black')
 s2_l_real, = plot(s2.x(), s2.f().real, color='red')
