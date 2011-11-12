@@ -48,11 +48,13 @@ s2_l_imag, = plot(s2.x(), s2.f().imag, color='blue')
 s2_l_pot   = plot(s2.x(), s2.V(), color='green')
 
 runSimulation = False
+i = 0
 
 def update():
+    global i
+    i += 1
     s1.evolve(0.01)
     s2.evolve(0.01)
-
     s1_l_amp.set_ydata(abs(s1.f()))
     s1_l_real.set_ydata(real(s1.f()))
     s1_l_imag.set_ydata(imag(s1.f()))
@@ -60,14 +62,18 @@ def update():
     s2_l_real.set_ydata(real(s2.f()))
     s2_l_imag.set_ydata(imag(s2.f()))
     fig.canvas.draw_idle()
+    if not runSimulation:
+        print "stopped simulation after {} iterations".format(i)
     return runSimulation
 
 def onpress(event):
     global runSimulation
     if event.key==' ':
         if runSimulation:
+            print "stopping simulation"
             runSimulation = False
         else:
+            print "starting simulation"
             runSimulation = True
             gobject.idle_add(update)
 
