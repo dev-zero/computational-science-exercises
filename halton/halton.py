@@ -30,7 +30,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--random', dest='random', action='store_const', default=False, const=True, help="generate an equal number of random numbers (using /dev/urandom) and plot in a subplot")
     args = parser.parse_args()
 
-    i = range(args.start, args.numbers)
+    i = range(args.start, args.start+args.numbers)
 
     from matplotlib.pyplot import scatter, show, figure
     fig = figure()
