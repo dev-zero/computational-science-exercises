@@ -9,16 +9,23 @@
 
 from schroedinger import Schroedinger1D
 
-import gobject
-import matplotlib
-matplotlib.use('GTKAgg')
+try:
+    import gobject
+    import matplotlib
+    matplotlib.use('GTKAgg')
+except:
+    from sys import exit
+    print("This app works only with GTK+ installed and matplotlib built with GTK+ support.")
+    exit(1)
 
 from pylab import plot, show, figure
 from numpy import abs, real, imag, vectorize
 
+# initialize the two simulations
 s1 = Schroedinger1D(256, L=20)
 s2 = Schroedinger1D(256, L=20)
 
+# models the double well potential
 def doubleWellPotential(x):
     sigma = 0.04
     pos = 2.
@@ -27,6 +34,7 @@ def doubleWellPotential(x):
         return 0.
     return 10.
 
+# use the double well potential in the second plot
 s2.setPotential(vectorize(doubleWellPotential))
 
 fig = figure()
@@ -53,8 +61,8 @@ i = 0
 def update():
     global i
     i += 1
-    s1.evolve(0.01)
-    s2.evolve(0.01)
+    s1.evolve(0.02)
+    s2.evolve(0.02)
     s1_l_amp.set_ydata(abs(s1.f()))
     s1_l_real.set_ydata(real(s1.f()))
     s1_l_imag.set_ydata(imag(s1.f()))
@@ -64,7 +72,7 @@ def update():
     fig.canvas.draw_idle()
     if not runSimulation:
         print "stopped simulation after {} iterations".format(i)
-    return runSimulation
+    return runSimulation # return False terminates this gobject-callback
 
 def onpress(event):
     global runSimulation
@@ -75,7 +83,7 @@ def onpress(event):
         else:
             print "starting simulation"
             runSimulation = True
-            gobject.idle_add(update)
+            gobject.idle_add(update) # readding the gobject-callback function
 
 fig.canvas.mpl_connect('key_press_event', onpress)
 show()
