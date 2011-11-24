@@ -20,13 +20,13 @@ def randomWalk(N1, N2):
             if n1 < N1:
                 n1 += 1
                 positions.append(positions[-1]+N2)
-            # else:
+            # else: # does not really change the statistics
             #     positions.append(positions[-1])
         else:
             if n2 < N2:
                 n2 += 1
                 positions.append(positions[-1]-N1)
-            # else:
+            # else: # does not really change the statistics
             #     positions.append(positions[-1])
 
     # returning to stepsize 1/N1, resp. 1/N2
