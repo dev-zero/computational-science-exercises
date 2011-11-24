@@ -42,7 +42,7 @@ if __name__ == '__main__':
     # generate the random walks
     coords = [sum(directionsGenerator(args.steps)) for c in xrange(args.count)]
 
-    from pylab import hist, plot, show, figure
+    from pylab import hist, plot, show, figure, xlabel, ylabel
     from numpy import abs, real, imag, sqrt, arange, vectorize
 
     fig = figure()
@@ -52,17 +52,23 @@ if __name__ == '__main__':
     n, bins, patches = hist(abs(coords), args.bins, normed=True, histtype='step')
     r = arange(0, bins[-1], 0.1)
     plot(r, distanceProbability(r, args.steps))
+    xlabel("distance")
+    ylabel("probability")
 
     # the x-coordinate
     ax = fig.add_subplot(312)
     n, bins, patches = hist(real(coords), args.bins, normed=True, histtype='step')
     x = arange(bins[0], bins[-1], 0.1)
     plot(x, endpointProbabilitySingleCoord(x, args.steps))
+    xlabel("x-coordinate")
+    ylabel("probability")
 
     # the y-coordinate
     ax = fig.add_subplot(313)
     n, bins, patches = hist(imag(coords), args.bins, normed=True, histtype='step')
     y = arange(bins[0], bins[-1], 0.1)
     plot(y, endpointProbabilitySingleCoord(y, args.steps))
+    xlabel("y-coordinate")
+    ylabel("probability")
 
     show()
