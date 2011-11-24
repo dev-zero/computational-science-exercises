@@ -32,6 +32,12 @@ def randomWalk(N1, N2):
     # returning to stepsize 1/N1, resp. 1/N2
     return [float(p)/(N1*N2) for p in positions]
 
+def ks(D, M, s):
+    from numpy import sqrt, exp
+    nu = sqrt(D*M/(D+M))
+    mu = nu + 0.12 + 0.11/nu
+    return 2.*sum(map(lambda k: (-1)**k * exp(-2.*(k+1.)**2 * mu**2 * s**2), xrange(100)))
+
 if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser(description="generate random walks with maximal steps N1/N2, and plot the KS statistics for the maximal distance")
@@ -44,7 +50,14 @@ if __name__ == '__main__':
     # generate random walks and map them to their corresponding maximal distance
     distances = map(lambda r: max(abs(min(r)), max(r)), [randomWalk(args.n1, args.n2) for s in xrange(args.samples)])
 
-    from matplotlib.pyplot import hist, show, xlabel
+    from matplotlib.pyplot import hist, show, xlabel, ylabel, xlim, ylim, plot
+    from numpy import arange
+
+    x = arange(0, 1, 0.01)
     hist(distances, cumulative=True, bins=args.bins, histtype='step', normed=True)
+    plot(x, [1.-ks(args.n1, args.n2, s) for s in x])
+    xlim(0, 1)
+    ylim(0, 1)
     xlabel('cumulative sum of the maximum fractional distances\ngiving the KS statistics of the two random walks')
+    ylabel('probability')
     show()
