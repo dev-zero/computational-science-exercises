@@ -41,9 +41,10 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--bins', dest='bins', metavar='N', action='store', type=int, default=100, help="number of bins in the histogram")
     args = parser.parse_args()
 
+    # generate random walks and map them to their corresponding maximal distance
     distances = map(lambda r: max(abs(min(r)), max(r)), [randomWalk(args.n1, args.n2) for s in xrange(args.samples)])
 
     from matplotlib.pyplot import hist, show, xlabel
     hist(distances, cumulative=True, bins=args.bins, histtype='step', normed=True)
-    xlabel('cumulative sum of the maximum distances giving the KS statistics of the two random walks')
+    xlabel('cumulative sum of the maximum fractional distances\ngiving the KS statistics of the two random walks')
     show()
