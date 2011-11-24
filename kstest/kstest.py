@@ -36,6 +36,7 @@ def ks(D, M, s):
     from numpy import sqrt, exp
     nu = sqrt(D*M/(D+M))
     mu = nu + 0.12 + 0.11/nu
+    # don't really care about precision here, just cut off the series after some k
     return 2.*sum(map(lambda k: (-1)**k * exp(-2.*(k+1.)**2 * mu**2 * s**2), xrange(100)))
 
 if __name__ == '__main__':
