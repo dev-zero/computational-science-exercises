@@ -52,11 +52,11 @@ def metropolisWalk(x, ab, s):
 if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser(description="generate random coordinates for the lighthouse problem and find the original a,b parameters by using the Metropolis(-Hastings) algorithm")
-    parser.add_argument('-a', dest='a', metavar='x', action='store', type=float, default=-0.5, help="x-coordinate of the lighthouse")
-    parser.add_argument('-b', dest='b', metavar='y', action='store', type=float, default=0.7, help="y-coordinate of the lighthouse")
-    parser.add_argument('-s', '--samples', metavar='N', dest='samples', action='store', type=int, default=100, help="the number of measurement samples to generate")
-    parser.add_argument('-m', '--minsteps', metavar='N', dest='minsteps', action='store', type=int, default=100, help="the minimal number of steps in each of the random-walks in the Metropolis algorithm")
-    parser.add_argument('-w', '--walks', metavar='N', dest='walks', action='store', type=int, default=100, help="the number of random walks in the Metropolis algorithm")
+    parser.add_argument('-a', dest='a', metavar='x', action='store', type=float, default=-0.5, help="x-coordinate of the lighthouse (default: %(default)s)")
+    parser.add_argument('-b', dest='b', metavar='y', action='store', type=float, default=0.7, help="y-coordinate of the lighthouse (default: %(default)s)")
+    parser.add_argument('-s', '--samples', metavar='N', dest='samples', action='store', type=int, default=100, help="the number of measurement samples to generate (default: %(default)s)")
+    parser.add_argument('-m', '--minsteps', metavar='N', dest='minsteps', action='store', type=int, default=100, help="the minimal number of steps in each of the random-walks in the Metropolis algorithm (default: %(default)s)")
+    parser.add_argument('-w', '--walks', metavar='N', dest='walks', action='store', type=int, default=100, help="the number of random walks in the Metropolis algorithm (default: %(default)s)")
     args = parser.parse_args()
 
     # generate random x
