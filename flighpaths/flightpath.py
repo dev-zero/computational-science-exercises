@@ -10,33 +10,62 @@
 import Tkinter as tk
 from PIL import Image, ImageTk
 
-from numpy import sqrt, arcsin, arccos, arctan2, sin, cos, pi
+from numpy import sqrt, pi, sin, cos, array, cross, dot, arccos, append, arctan2, arcsin, linspace
+from numpy.linalg import norm
+from hammer_aitov import cartesian2spherical, spherical2cartesian
+import quaternions as quat
+
+WIDTH=1024
+HEIGHT=512
+POINT_RADIUS=4
+POINT_COLOR='red'
 
 window = tk.Tk()
 window.title("Flightpaths")
 
-canvas = tk.Canvas(window, height=512, width=1024)
+canvas = tk.Canvas(window, height=HEIGHT, width=WIDTH)
 canvas.pack(fill="both", expand="yes")
 
 image = Image.open("Hammer-Aitov_Projection.jpg")
 projection = ImageTk.PhotoImage(image)
 
-canvas.create_image((512,256), image=projection)
+canvas.create_image((WIDTH//2,HEIGHT//2), image=projection)
 
-def cartesian2spherical_ha(x, y):
-    u = sqrt(1. - x**2/16. - y**2/4.)
-    return (arcsin(u*y), 2.*arctan2(u*x, 4*u**2 -2.))
+start  = None
+end    = (0,0)
+points = []
 
-def spherical2cartesian_ha(theta, phi):
-    return (2.*sqrt(2)*sin(theta)*sin(.5*phi)/sqrt(1.+sin(theta)*cos(.5*phi)), 2.*cos(theta)/sqrt(1.+sin(theta)*cos(.5*phi)))
+def map2cartesian(xy):
+    # scaling Tk coordinates to X=[-2*sqrt(2)..2*sqrt(2), Y=[-sqrt(2)..sqrt(2)]
+    x, y = (2*sqrt(2)*(xy[0]-WIDTH/2)/(WIDTH/2), sqrt(2)*(-xy[1]+HEIGHT/2)/(HEIGHT/2))
+    theta, phi = cartesian2spherical(x, y)
+    xyz = array((cos(theta)*cos(phi), cos(theta)*sin(phi), sin(theta)))
+    return xyz
 
-def moved(event):
-    x = 2*sqrt(2)*(event.x-512)/1024.
-    y =   sqrt(2)*(-event.y+256)/512.
-    print x, y
-    theta, phi = cartesian2spherical_ha(x, y)
-    print 360*theta/pi, 360*phi/pi
+def cartesian2map(xyz):
+    theta = arcsin(xyz[2])
+    phi   = arctan2(xyz[1], xyz[0])
+    x, y = spherical2cartesian(theta, phi)
+    return (int((WIDTH/2)*x/(2*sqrt(2)))+WIDTH//2, -int((HEIGHT/2)*y/sqrt(2)) + HEIGHT//2)
 
-canvas.bind("<Motion>", moved)
+def clicked(event):
+    global start, end, points
+    if end != None:
+        start = (event.x,event.y)
+        end   = None
+        for p in points:
+            canvas.delete(p)
+        points = []
+    else:
+        end = (event.x, event.y)
+
+        s = map2cartesian(start)
+        e = map2cartesian(end)
+
+        for t in linspace(0, 1, 10):
+            x, y = cartesian2map(quat.slerp(quat.quatFromVector(s), quat.quatFromVector(e), t)[1:4])
+            points.append(canvas.create_oval(x-POINT_RADIUS, y-POINT_RADIUS, x+POINT_RADIUS, y+POINT_RADIUS, fill=POINT_COLOR))
+
+canvas.bind("<Button-1>", clicked)
 window.mainloop()
 
