@@ -71,7 +71,10 @@ matplotlib.use('TkAgg')
 
 class App:
     def __init__(self, master):
-        from Tkinter import Label, Entry, Canvas, Button
+        try:
+            from tkinter import Label, Entry, Canvas, Button
+        except ImportError:
+            from Tkinter import Label, Entry, Canvas, Button
         from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
         from matplotlib.figure import Figure
     
@@ -127,7 +130,7 @@ class App:
         self.resetInitialConditions()
         xs = []
         ys = []
-        for i in xrange(int(self.steps.get())):
+        for i in range(int(self.steps.get())):
             x,y = self.r3b.getPosition()
             xs.append(x)
             ys.append(y)
@@ -137,7 +140,11 @@ class App:
         self.a.plot(xs, ys)
         self.canvas.draw()
 
-from Tkinter import Tk
+try:
+    from tkinter import Tk
+except ImportError:
+    from Tkinter import Tk
+
 window = Tk()
 window.title("Restricted Three-Body Problem")
 app=App(window)
